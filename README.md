@@ -1,6 +1,3 @@
-# Machine Learning Project - Natural Language Classifier
-### Hugging Face Emotions Dataset
-
 # Machine Learning Project - Natural Language Classifier  
 
 ## Dataset: Hugging Face Emotions  
@@ -16,35 +13,8 @@ The dataset has already been ingested and cleaned into a CSV file for easy use.
 - **Processed data:** Stored at:  
   `data/processed/emotion_clean.csv`  
 
-You can load this file directly into your ML pipeline.  
-
 ---
 
-## Project Structure  
-
-nlc_emotion/
-│
-├── data/
-│ ├── raw/ # Raw dataset (if needed)
-│ ├── processed/ # Cleaned dataset
-│ │ └── emotion_clean.csv
-│
-├── nlc_ingest/ # Ingestion + cleaning modules
-│ ├── io.py
-│ ├── cleaning.py
-│ └── init.py
-│
-├── tests/ # Unit tests
-├── ingest.py # Main ingestion entrypoint (if re-running)
-├── config.py # Configurations
-├── requirements.txt # Dependencies
-├── Makefile # Make commands
-├── ingest.log # Logs
-└── README.md
-
-## Ingestion
-
-### Setup
 <!-- 
 Install dependencies:
 ```bash
