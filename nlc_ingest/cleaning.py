@@ -1,6 +1,5 @@
 import pandas as pd
 import re, logging
-from ingest import logger
 from nlc_ingest.io import load_data, save_dataframe
 
 logger = logging.getLogger(__name__)

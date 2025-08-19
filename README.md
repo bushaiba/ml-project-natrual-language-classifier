@@ -1,6 +1,57 @@
 # Machine Learning Project - Natural Language Classifier
 ### Hugging Face Emotions Dataset
 
+# Machine Learning Project - Natural Language Classifier  
+
+## Dataset: Hugging Face Emotions  
+
+This project uses the **Hugging Face `dair-ai/emotion` dataset** for emotion recognition in text.  
+The dataset has already been ingested and cleaned into a CSV file for easy use.  
+
+---
+
+## Data  
+
+- **Raw data:** Downloaded from Hugging Face (`dair-ai/emotion`)  
+- **Processed data:** Stored at:  
+  `data/processed/emotion_clean.csv`  
+
+You can load this file directly into your ML pipeline.  
+
+---
+
+## Project Structure  
+
+nlc_emotion/
+│
+├── data/
+│ ├── raw/ # Raw dataset (if needed)
+│ ├── processed/ # Cleaned dataset
+│ │ └── emotion_clean.csv
+│
+├── nlc_ingest/ # Ingestion + cleaning modules
+│ ├── io.py
+│ ├── cleaning.py
+│ └── init.py
+│
+├── tests/ # Unit tests
+├── ingest.py # Main ingestion entrypoint (if re-running)
+├── config.py # Configurations
+├── requirements.txt # Dependencies
+├── Makefile # Make commands
+├── ingest.log # Logs
+└── README.md
+
+## Ingestion
+
+### Setup
+<!-- 
+Install dependencies:
+```bash
+pip install -r requirements.txt -->
+
+# Citation Information:
+
 @inproceedings{saravia-etal-2018-carer,
     title = "{CARER}: Contextualized Affect Representations for Emotion Recognition",
     author = "Saravia, Elvis  and
