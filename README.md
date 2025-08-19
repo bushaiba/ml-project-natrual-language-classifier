@@ -1,4 +1,5 @@
-# ml-project-natrual-language-classifier
+# Machine Learning Project - Natural Language Classifier
+### Hugging Face Emotions Dataset
 
 @inproceedings{saravia-etal-2018-carer,
     title = "{CARER}: Contextualized Affect Representations for Emotion Recognition",
