@@ -48,5 +48,36 @@ def split_data(df: pd.DataFrame, use_split: bool, val_size: float, seed:int):
     """ 
     Returns X_train, y_train, X_val, y_val
     If use_split=True and 'split' column exists, use it (train vs validation/test)
-    Otherwise, do a random stratified split 
+    Otherwise, do a random stratified split [stratified split makes sure the proportions stay the same]
     """
+    if use_split and "split" in df.columns:
+        has_validation = (df["split"]) == "validation".any()
+        # it sets has_validation to True if at least one row is "validation", otherwise False
+
+        if has_validation:
+            train_df = df[df["split"] == "train"]
+            val_df = df[df["split"] == "validation"]
+        else:
+            train_df = df[df["split"] == "train"]
+            val_df = df[df["split"] == "test"]
+        if  len(train_df) == 0 or len(val_df) == 0:
+            raise ValueError("Split column present but train/validation/test are empty.")
+
+        # .tolist() converts pandas Series/columns into a plain Python list
+        X_train = train_df["text"].tolist()
+        y_train = train_df["label"].tolist()
+        
+        X_val = val_df["text"].tolist()
+        y_val = val_df["label"].tolist()
+        logging.info("Using provided split column: train=%d, val=%d", len(X_train), len(X_val))
+        
+        return X_train, y_train, X_val, y_val
+    
+    # random split as a fallback mechanism
+    X = df["text"].tolist()
+    y = df["label"].tolist()
+    X_train, X_val, y_train, y_val = train_test_split(
+        X, y, test_size=val_size, random_state=seed, stratify=y
+    )
+    logging.info("Using random split: train=%d, val=%d (val_side=%.2f)", len(X_train), len(X_val), val_size)
+    return X_train, y_train, X_val, y_val
