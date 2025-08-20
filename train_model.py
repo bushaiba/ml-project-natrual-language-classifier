@@ -11,7 +11,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 
 
-def setup_logging_for_model():
+def setup_logging():
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s %(levelname)s %(message)s",
@@ -20,7 +20,7 @@ def setup_logging_for_model():
     )
 
 
-def parse_args_for_model():
+def parse_args():
     parser = argparse.ArgumentParser(description="Train a baseline text classifier.")
     parser.add_argument("--input", default="data/processed/emotion_clean.csv",
                         help="Path to cleaned CSV (Columns: text, label, split).")
@@ -35,7 +35,7 @@ def parse_args_for_model():
     return parser.parse_args()
 
 
-def load_dataset_csv(path_str: str) -> pd.DataFrame:
+def load_dataset(path_str: str) -> pd.DataFrame:
     logging.info("Loading dataset from %s", path_str)
     df = pd.read_csv(path_str)
 
@@ -44,6 +44,7 @@ def load_dataset_csv(path_str: str) -> pd.DataFrame:
         raise ValueError("Input CSV must contain 'text' and 'label' columns.")
     return df
 
+
 def split_data(df: pd.DataFrame, use_split: bool, val_size: float, seed:int):
     """ 
     Returns X_train, y_train, X_val, y_val
@@ -51,7 +52,7 @@ def split_data(df: pd.DataFrame, use_split: bool, val_size: float, seed:int):
     Otherwise, do a random stratified split [stratified split makes sure the proportions stay the same]
     """
     if use_split and "split" in df.columns:
-        has_validation = (df["split"]) == "validation".any()
+        has_validation = (df["split"] == "validation").any()
         # it sets has_validation to True if at least one row is "validation", otherwise False
 
         if has_validation:
@@ -79,5 +80,90 @@ def split_data(df: pd.DataFrame, use_split: bool, val_size: float, seed:int):
     X_train, X_val, y_train, y_val = train_test_split(
         X, y, test_size=val_size, random_state=seed, stratify=y
     )
-    logging.info("Using random split: train=%d, val=%d (val_side=%.2f)", len(X_train), len(X_val), val_size)
+    logging.info("Using random split: train=%d, val=%d (val_size=%.2f)", len(X_train), len(X_val), val_size)
     return X_train, y_train, X_val, y_val
+
+
+def build_pipeline():
+    """
+    TF-IDF bag-of-words + Logistic Regression
+    - lowercase handled by vectorizer
+    - ngram_range=(1,2) often helps a bit for short texts
+    """
+    vectorizer = TfidfVectorizer(
+        lowercase=True,
+        ngram_range=(1, 2),
+        min_df=2,
+        max_df=0.95,
+    )
+    clf = LogisticRegression(
+        max_iter=1000,
+        n_jobs=None,  # Change to -1 if you want to use all cores
+        solver="lbfgs",
+        multi_class="multinomial",
+        C=1.0,
+        random_state=42,
+    )
+    pipe = Pipeline([
+        ("tfidf", vectorizer),
+        ("logreg", clf),
+    ])
+    return pipe
+
+
+def evaluate(y_true, y_pred, label_names=None):
+    acc = accuracy_score(y_true, y_pred)
+    precision, recall, f1, _ = precision_recall_fscore_support(
+        y_true, y_pred, average="weighted", zero_division=0
+    )
+
+    logging.info("Accuracy: %.4f", acc)
+    logging.info("Precision (weighted): %.4f", precision)
+    logging.info("Recall (weighted): %.4f", recall)
+    logging.info("F1 (weighted): %.4f", f1)
+
+    # Classification report
+    report = classification_report(y_true, y_pred, zero_division=0)
+    logging.info("Classification Report:\n%s", report)
+
+    # Confusion matrix
+    cm = confusion_matrix(y_true, y_pred, labels=label_names) if label_names else confusion_matrix(y_true, y_pred)
+    logging.info("Confusion Matrix:\n%s", cm)
+
+
+def save_model(model, path: str):
+    path_obj = Path(path)
+    path_obj.parent.mkdir(parents=True, exist_ok=True)
+    with open(path_obj, "wb") as f:
+        pickle.dump(model, f)
+    logging.info("Model saved to: %s", path)
+
+
+def main():
+    args = parse_args()
+    setup_logging()
+    logger = logging.getLogger(__name__)
+
+    df = load_dataset(args.input)
+    X_train, y_train, X_val, y_val = split_data(
+    df, use_split=args.use_split_column, val_size=args.val_size, seed=args.random_state
+    )
+
+    # Label names for consistent confusion matrix ordering (sorted for readability)
+    label_names = sorted(list(set(df["label"].tolist())))
+
+    model = build_pipeline()
+
+    logger.info("Training model...")
+    model.fit(X_train, y_train)
+
+    logger.info("Evaluating on validation set...")
+    y_pred = model.predict(X_val)
+    evaluate(y_val, y_pred, label_names=label_names)
+
+    save_model(model, args.model_out)
+    logger.info("Done.")
+
+
+if __name__ == "__main__":
+    main()
