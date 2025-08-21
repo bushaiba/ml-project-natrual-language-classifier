@@ -145,9 +145,6 @@ def evaluate(y_true, y_pred, label_names=None):
         cm_df = pd.DataFrame(cm, index=label_names, columns=label_names)
         logging.info("Confusion Matrix (counts):\n%s", cm_df.to_string())
 
-        # row_pct = (cm_df.div(cm_df.sum(axis=1), axis=0) * 100).round(1)
-        # logging.info("Confusion Matrix (row %%):\n%s", row_pct.to_string())
-
     except Exception:
         logging.info("Confusion Matrix (raw):\n%s", cm)
 

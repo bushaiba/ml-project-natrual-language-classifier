@@ -74,7 +74,7 @@ nlc_emotion/
 ### Ingest Data
 Run the ingestion script from the command line:
 ```bash
-python ingest.py [--dataset DATASET] [--format {csv,json}] [--out OUTPUT_PATH]
+python ingest.py --dataset (name of dataset) --format (csv or json) --out (path to output file)
 ```
 
 Arguments:  
@@ -104,14 +104,28 @@ Arguments:
 
 Alternatively, you can use the **Makefile** shortcut:  
 ```bash
-make train
+make ingest     # run ingestion with defaults
+make train      # train model and save to models/
+make interface  # start CLI interface
 ```
+
+### 3. Run Classifier Interface  
+```bash
+python simple_interface.py
+```
+Instructions shown in console:  
+- Type a sentence → get label (`joy`, `anger`, `fear`, etc.)  
+- Type `clear` → clear screen  
+- Type `exit`/`quit`/`q`/`x` → exit  
+
+---
 
 ---
 
 ## Logging  
-- Ingestion logs → `ingest.log`  
-- Training logs → `train.log`  
+- `ingest.log` → ingestion process  
+- `train.log` → training + evaluation  
+- `interface.log` → interface runtime 
 
 Training log example:  
 ```
