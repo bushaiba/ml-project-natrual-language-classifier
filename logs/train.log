@@ -1,0 +1,32 @@
+2025-08-21 19:33:44,617 INFO Loading dataset from data/processed/emotion_clean.csv
+2025-08-21 19:33:44,636 INFO Using provided split column: train=15999, val=2000
+2025-08-21 19:33:44,637 INFO Training model...
+2025-08-21 19:33:47,085 INFO Evaluating on validation set...
+2025-08-21 19:33:47,127 INFO Accuracy: 0.8280
+2025-08-21 19:33:47,127 INFO Precision (weighted): 0.8401
+2025-08-21 19:33:47,127 INFO Recall (weighted): 0.8280
+2025-08-21 19:33:47,127 INFO F1 (weighted): 0.8177
+2025-08-21 19:33:47,135 INFO Classification Report:
+              precision    recall  f1-score   support
+
+       anger       0.94      0.75      0.83       275
+        fear       0.88      0.66      0.75       212
+         joy       0.79      0.96      0.87       704
+        love       0.90      0.49      0.64       178
+     sadness       0.82      0.93      0.87       550
+    surprise       0.89      0.40      0.55        81
+
+    accuracy                           0.83      2000
+   macro avg       0.87      0.70      0.75      2000
+weighted avg       0.84      0.83      0.82      2000
+
+2025-08-21 19:33:47,138 INFO Confusion Matrix (counts):
+          anger  fear  joy  love  sadness  surprise
+anger       206     5   28     1       35         0
+fear          4   139   36     0       30         3
+joy           3     1  678     9       13         0
+love          2     0   65    88       23         0
+sadness       4     3   29     0      513         1
+surprise      1    10   24     0       14        32
+2025-08-21 19:33:47,142 INFO Model saved to: models/emotion_model.pkl
+2025-08-21 19:33:47,142 INFO Done.

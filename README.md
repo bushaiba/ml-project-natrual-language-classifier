@@ -28,21 +28,34 @@ The training pipeline:
 
 ## Project Structure  
 ```
-nlc_emotion/
-│
-├── ingest.py               # Ingest & clean raw dataset
-├── ingest.log              # Log from ingestion runs
-├── train_model.py          # Train, evaluate, and save ML model
-├── train.log               # Log from training runs
-├── models/                 # Saved ML models (.pkl)
-├── nlc_ingest/
+NLC_EMOTION/
+│── data/
+│   └── processed/emotion_clean.csv
+│── models/
+│   └── emotion_model.pkl
+│── nlc_ingest/
 │   ├── __init__.py
-│   ├── cleaning.py         # clean_text, normalise_label, standardise
-│   ├── config.py           # default paths, allowed formats
-│   ├── io.py               # load_data, save_dataframe
-│   └── ...
-└── data/
-    └── processed/          # processed dataset output
+│   ├── cleaning.py
+│   ├── config.py
+│   └── io.py
+│── src/
+│   ├── emotion_classifier.py
+|   ├── ingest.py
+│   ├── simple_interface.py
+│   └── train_model.py
+│── logs/
+│   ├── train.log
+│   ├── interface.log
+│   └── ingest.log
+│── reports/
+│   └── figures/confusion_matrix.png
+│── tests/
+│── venv/
+│── Makefile
+│── README.md
+│── requirements.txt
+│── .gitignore
+
 ```
 
 ---

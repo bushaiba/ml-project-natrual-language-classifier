@@ -23,7 +23,7 @@ def setup_logging():
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s %(levelname)s %(message)s",
-        filename="ingest.log",
+        filename="logs/ingest.log",
         filemode="w"
     )
 
