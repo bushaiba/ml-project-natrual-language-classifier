@@ -139,6 +139,36 @@ Schema:
 
 ---
 
+
+
+### Emotion Classifier (Interactive Predictions)
+After training, you can use the provided `emotion_classifier.py` to interact with the saved model.  
+
+Example usage:  
+```bash
+python emotion_classifier.py
+```
+
+This script:  
+- Loads the trained model from `models/`.  
+- Cleans and preprocesses input text.  
+- Provides three key methods:  
+  - **classify(text)** → returns the single best predicted label.  
+  - **probs(text)** → returns probabilities for all emotion classes (rounded to 2 decimals).  
+  - **topk(text, k=3)** → returns the top-K highest scoring emotions with probabilities.  
+
+Example output:  
+```
+Single prediction: joy
+
+Probabilities:
+{'anger': 0.12, 'fear': 0.13, 'joy': 0.33, 'love': 0.06, 'sadness': 0.32, 'surprise': 0.04}
+
+Top 3 predictions:
+[('joy', 0.33), ('sadness', 0.32), ('fear', 0.13)]
+```
+
+
 ## Citation  
 
 If you use the **Emotion dataset**, cite:  

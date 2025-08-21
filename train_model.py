@@ -3,6 +3,9 @@ import logging
 import pickle
 from pathlib import Path
 
+import matplotlib.pyplot as plt
+import seaborn as sns
+
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
@@ -33,6 +36,14 @@ def parse_args():
     parser.add_argument("--random_state", type=int, default=42,
                         help="Random seed for reproducibility.")
     return parser.parse_args()
+
+
+def save_model(model, path: str):
+    path_obj = Path(path)
+    path_obj.parent.mkdir(parents=True, exist_ok=True)
+    with open(path_obj, "wb") as f:
+        pickle.dump(model, f)
+    logging.info("Model saved to: %s", path)
 
 
 def load_dataset(path_str: str) -> pd.DataFrame:
@@ -98,7 +109,7 @@ def build_pipeline():
     )
     clf = LogisticRegression(
         max_iter=1000,
-        n_jobs=None,  # Change to -1 if you want to use all cores
+        n_jobs=-1, 
         solver="lbfgs",
         multi_class="multinomial",
         C=1.0,
@@ -122,21 +133,24 @@ def evaluate(y_true, y_pred, label_names=None):
     logging.info("Recall (weighted): %.4f", recall)
     logging.info("F1 (weighted): %.4f", f1)
 
-    # Classification report
     report = classification_report(y_true, y_pred, zero_division=0)
     logging.info("Classification Report:\n%s", report)
 
-    # Confusion matrix
-    cm = confusion_matrix(y_true, y_pred, labels=label_names) if label_names else confusion_matrix(y_true, y_pred)
-    logging.info("Confusion Matrix:\n%s", cm)
+    if label_names:
+        cm = confusion_matrix(y_true, y_pred, labels=label_names)
+    else:
+        cm = confusion_matrix(y_true, y_pred)
 
+    try:
+        cm_df = pd.DataFrame(cm, index=label_names, columns=label_names)
+        logging.info("Confusion Matrix (counts):\n%s", cm_df.to_string())
 
-def save_model(model, path: str):
-    path_obj = Path(path)
-    path_obj.parent.mkdir(parents=True, exist_ok=True)
-    with open(path_obj, "wb") as f:
-        pickle.dump(model, f)
-    logging.info("Model saved to: %s", path)
+        # row_pct = (cm_df.div(cm_df.sum(axis=1), axis=0) * 100).round(1)
+        # logging.info("Confusion Matrix (row %%):\n%s", row_pct.to_string())
+
+    except Exception:
+        logging.info("Confusion Matrix (raw):\n%s", cm)
+
 
 
 def main():
@@ -163,7 +177,13 @@ def main():
 
     save_model(model, args.model_out)
     logger.info("Done.")
+    
+    return model
 
 
 if __name__ == "__main__":
-    main()
+    model = main()
+
+    # string = "i feel energetic"
+    # print(model.predict([string]))
+

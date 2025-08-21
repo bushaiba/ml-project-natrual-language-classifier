@@ -1,6 +1,6 @@
-2025-08-20 17:06:38,052 INFO Loading dataset: dair-ai/emotion
-2025-08-20 17:06:39,858 INFO Cleaning and standardising splits...
-2025-08-20 17:06:39,919 INFO Dropped 1 duplicate (text, label) rows
-2025-08-20 17:06:39,938 INFO Combining 3 cleaned splits
-2025-08-20 17:06:39,939 INFO Saving 19999 rows to data/processed/emotion_clean.csv as csv
-2025-08-20 17:06:39,962 INFO Ingest complete.
+2025-08-21 11:08:01,942 INFO Loading dataset: dair-ai/emotion
+2025-08-21 11:08:03,578 INFO Cleaning and standardising splits...
+2025-08-21 11:08:03,640 INFO Dropped 1 duplicate (text, label) rows
+2025-08-21 11:08:03,658 INFO Combining 3 cleaned splits
+2025-08-21 11:08:03,659 INFO Saving 19999 rows to data/processed/emotion_clean.csv as csv
+2025-08-21 11:08:03,683 INFO Ingest complete.
