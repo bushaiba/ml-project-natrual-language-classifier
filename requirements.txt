@@ -20,7 +20,7 @@ seaborn>=0.13
 # LLM / Chatbot
 transformers>=4.46,<4.49
 tokenizers>=0.20,<0.21
-accelerate>=0.34
+accelerate>=0.33
 huggingface-hub>=0.24
 safetensors>=0.4.5
 torch==2.7.1

@@ -1,0 +1,5 @@
+2025-08-22 17:59:52,189 INFO Loaded pipeline steps : ['tfidf', 'logreg']
+2025-08-22 18:03:14,040 INFO Loaded pipeline steps : ['tfidf', 'logreg']
+2025-08-22 18:05:57,541 INFO Loaded pipeline steps : ['tfidf', 'logreg']
+2025-08-22 18:07:51,751 INFO Loaded pipeline steps : ['tfidf', 'logreg']
+2025-08-22 18:13:14,954 INFO Loaded pipeline steps : ['tfidf', 'logreg']

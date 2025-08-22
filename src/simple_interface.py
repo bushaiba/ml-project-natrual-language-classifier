@@ -32,18 +32,18 @@ def simple_interface():
     print("[INSTRUCTIONS]\n")
     print("- Type a sentence and press Enter to classify.\n")
     print("- Type 'exit', 'quit', 'q' or 'x' to EXIT.\n")
-    print("- Type 'clear' to CLEAR the screen.")
+    print("- Type 'clear' to CLEAR the history.")
     print("\n")
 
     while True:
         try: 
-            user_text = input("> Enter text here: ").strip()
+            user_text = input("> ").strip()
         except(EOFError, KeyboardInterrupt):
-            print("\nGoodbye!")
+            print("\nBye!")
             break
 
         if user_text.lower() in {"exit", "quit", "q", "x"}:
-            print("Goodbye!")
+            print("\nBye!")
             break
 
         if user_text == "":
