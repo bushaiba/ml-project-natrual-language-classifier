@@ -2,6 +2,9 @@ import logging
 from typing import Tuple, Any
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
+from src.emotion_classifier import EmotionClassifier
+from nlc_ingest.config import MODEL_FILE
+
 
 DEFAULT_MODEL_ID = "TinyLlama/TinyLlama-1/1B-Chat-v1.0"
 EXTRACTOR_SYSTEM_PROMPT = (
@@ -54,14 +57,49 @@ def extract_relevant_text(tokenizer: Any, model: any, user_message: str) -> str:
     return text
 
 
-def classify_text(classifier: Any, test: str) -> str:
-    pass
+def classify_text(classifier: Any, text: str) -> str:
+    return classifier.classify(text)
 
 
-def make_reply(tokenizer: Any, model: Any, user_message: str, extracted: str, label: str) -> str:
-    pass
+def make_reply(tokenizer: Any, model: Any, user_message: str, extracted: str, predicted_label: str) -> str:
+    prompt = (
+        f"<|system|>\n{RESPONDER_SYSTEM_PROMPT}\n"
+        f"<|user|>\n"
+        f"User message:\n{user_message}\n\n"
+        f"Extracted text to classify:\n{extracted}\n\n"
+        f"Classifier label:\n{predicted_label}\n"
+        f"Write the reply now.\n"
+        f"<|assistant|>\n"
+    )
+    # <|assistant|> tells that model that it's its turn
+
+    input_ids = tokenizer.encode(prompt, return_tensors="pt").to(model.device)
+    output_ids = model.generate(
+        input_ids=input_ids,
+        max_new_tokens=80,
+        do_sample=True,
+        temperature=0.7,
+        top_p=0.9,
+        pad_token_id=tokenizer.eos_token_id
+    )
+
+    new_tokens = output_ids[0, input_ids.shape[1]:]
+    reply = tokenizer.decode(new_tokens, skip_special_tokens=True).strip()
+
+    if not reply:
+        reply = f"It reads as {predicted_label.lower()}."
+    return reply
 
 
+# plan for main()
+""" 
+- initiate logging
+- pars cli args for dynamic functionality and easier calls e.g. --model_id etc
+- load the classifier
+- load the LLM, both the tokenizer and the model
+- REPL loop approach: read, extract, classify, reply, print
+- necessary error handling
+"""
 def main():
     pass
 
