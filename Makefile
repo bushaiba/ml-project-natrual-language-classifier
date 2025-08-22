@@ -12,3 +12,6 @@ train:
 
 cli:
 	python src/simple_interface.py
+
+requirements:
+	pip install -r requirements.txt

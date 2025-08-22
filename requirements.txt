@@ -1,26 +1,30 @@
-datasets
-pyarrow
-python-dotenv
-tqdm
-pytest
-matplotlib
-seaborn
+--extra-index-url https://download.pytorch.org/whl/cpu
 
-certifi==2025.8.3
-iniconfig==2.1.0
-joblib==1.5.1
-numpy==2.3.2
-packaging==25.0
-pandas==2.3.1
-pluggy==1.6.0
-Pygments==2.19.2
-pytest==8.4.1
-pytest-it==0.1.5
-python-dateutil==2.9.0.post0
-pytz==2025.2
-scikit-learn==1.7.1
-scipy==1.16.1
-six==1.17.0
-threadpoolctl==3.6.0
-tzdata==2025.2
-ucimlrepo==0.0.7
+# Core
+numpy>=2.0
+pandas>=2.3
+scikit-learn>=1.6,<1.8
+scipy>=1.14,<1.17
+python-dotenv>=1.0
+tqdm>=4.66
+
+# Data IO
+datasets>=4.0.0
+pyarrow>=16.0
+ucimlrepo>=0.0.7
+
+# Plotting
+matplotlib>=3.8
+seaborn>=0.13
+
+# LLM / Chatbot
+transformers>=4.46,<4.49
+tokenizers>=0.20,<0.21
+accelerate>=0.34
+huggingface-hub>=0.24
+safetensors>=0.4.5
+torch==2.7.1
+
+# Testing
+pytest>=8.4
+pytest-it>=0.1.5
