@@ -40,9 +40,10 @@ NLC_EMOTION/
 │   └── io.py
 │── src/
 │   ├── emotion_classifier.py
-|   ├── ingest.py
+│   ├── ingest.py
 │   ├── simple_interface.py
-│   └── train_model.py
+│   ├── train_model.py
+│   └── chatbot_interface.py
 │── logs/
 │   ├── train.log
 │   ├── interface.log
@@ -55,7 +56,6 @@ NLC_EMOTION/
 │── README.md
 │── requirements.txt
 │── .gitignore
-
 ```
 
 ---
@@ -122,7 +122,7 @@ make train      # train model and save to models/
 make interface  # start CLI interface
 ```
 
-### 3. Run Classifier Interface  
+### Run Simple Classifier Interface  
 ```bash
 python simple_interface.py
 ```
@@ -131,27 +131,40 @@ Instructions shown in console:
 - Type `clear` → clear screen  
 - Type `exit`/`quit`/`q`/`x` → exit  
 
----
+### Run Chatbot Interface  
+The chatbot interface wraps the trained classifier inside a natural language dialogue.  
+It accepts messy input, extracts the relevant span, classifies it, and responds empathetically.  
+
+```bash
+python chatbot_interface.py
+```
+
+Options:  
+- `--debug` → prints extracted spans and classifier labels.  
+- `--model_id` → override the default Hugging Face model (default: TinyLlama).  
+
+Example session:  
+```
+Assistant: Hello! Say something and I'll classify the emotion.
+
+> My friend said 'I absolutely hated that film', do you think he liked it?
+[extracted]: I absolutely hated that film
+[label]: anger
+Assistant: That sounds negative—hopefully the next one is better.
+
+> I'm excited for my holiday!
+[extracted]: I'm excited for my holiday!
+[label]: joy
+Assistant: That sounds positive—enjoy your trip.
+```
 
 ---
 
 ## Logging  
 - `ingest.log` → ingestion process  
 - `train.log` → training + evaluation  
-- `interface.log` → interface runtime 
-
-Training log example:  
-```
-2025-08-20 19:01:22 INFO Loading dataset from data/processed/emotion_clean.csv
-2025-08-20 19:01:31 INFO Training model...
-2025-08-20 19:01:51 INFO Accuracy: 0.8280
-2025-08-20 19:01:53 INFO Confusion Matrix:
-[[206  5  28   1  35   0]
- [  4 139  36   0  9   3]
- ...]
-2025-08-20 19:01:53 INFO Model saved to: models/emotion_logreg_tfidf.pkl
-2025-08-20 19:01:53 INFO Done.
-```
+- `interface.log` → simple interface runtime  
+- `chatbot.log` → chatbot runtime  
 
 ---
 
@@ -166,9 +179,7 @@ Schema:
 
 ---
 
-
-
-### Emotion Classifier (Interactive Predictions)
+## Emotion Classifier (Interactive Predictions)
 After training, you can use the provided `emotion_classifier.py` to interact with the saved model.  
 
 Example usage:  
@@ -185,9 +196,9 @@ This script:
 Example output:  
 ```
 Single prediction: joy
-
 ```
 
+---
 
 ## Citation  
 

@@ -1,6 +1,6 @@
 # src/chatbot_interface.py
 
-import logging, argparse, os
+import logging, argparse, os, re
 from typing import Tuple, Any
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
@@ -31,7 +31,7 @@ def setup_logging() -> None:
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s %(levelname)s %(message)s",
-        filename="chatbot.log",
+        filename="logs/chatbot.log",
         filemode="a",
     )
 
@@ -44,7 +44,6 @@ def load_llm(model_id: str) -> Tuple[Any, Any]:
     to avoid attention mask warnings.
     """
     tokenizer = AutoTokenizer.from_pretrained(model_id, use_fast=True)
-
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
 
@@ -52,7 +51,7 @@ def load_llm(model_id: str) -> Tuple[Any, Any]:
         model_id,
         low_cpu_mem_usage=True,
         use_safetensors=True,
-        device_map="cpu",           # force CPU for stability
+        device_map="cpu",
     )
     model.eval()
     return tokenizer, model
@@ -62,19 +61,16 @@ def load_llm(model_id: str) -> Tuple[Any, Any]:
 
 def _clean_extracted(span: str) -> str:
     """
-    Post-process the extractor output to remove common junk and keep a single, clean line.
+    Post-process extractor output to remove junk and keep a clean single line.
     """
-    import re
-
     if not span:
         return ""
     s = span.strip()
 
     # take first non-empty line only
     for ln in s.splitlines():
-        ln = ln.strip()
-        if ln:
-            s = ln
+        if ln.strip():
+            s = ln.strip()
             break
 
     # drop common prefixes
@@ -85,7 +81,7 @@ def _clean_extracted(span: str) -> str:
     s = s.strip("'\"“”‘’ ").strip()
     s = re.sub(r"\s+", " ", s).strip()
 
-    # heuristic: very short or mostly non-letters -> treat as empty
+    # heuristic: too short or few letters → treat as empty
     letters = sum(ch.isalpha() for ch in s)
     if len(s.split()) < 2 or letters < 3:
         return ""
@@ -107,8 +103,8 @@ def extract_relevant_text(tokenizer: Any, model: Any, user_message: str) -> str:
     output_ids = model.generate(
         input_ids=input_ids,
         attention_mask=attention_mask,
-        max_new_tokens=40,                 # short, single line
-        do_sample=False,                   # deterministic extraction
+        max_new_tokens=40,  # short, single line
+        do_sample=False,    # deterministic
         pad_token_id=tokenizer.pad_token_id,
         eos_token_id=tokenizer.eos_token_id,
     )
@@ -128,7 +124,7 @@ def classify_text(classifier: Any, text: str) -> str:
 
 
 def make_reply(tokenizer: Any, model: Any, user_message: str, extracted: str, predicted_label: str) -> str:
-    # Pass the label implicitly in the system role but forbid mentioning it.
+    # Hide the label inside the system prompt as a private hint
     system_with_label = (
         RESPONDER_SYSTEM_PROMPT
         + f" (Internal hint: emotion={predicted_label}. Do NOT mention or reveal this.)"
@@ -146,8 +142,8 @@ def make_reply(tokenizer: Any, model: Any, user_message: str, extracted: str, pr
     output_ids = model.generate(
         input_ids=input_ids,
         attention_mask=attention_mask,
-        max_new_tokens=32,        # concise
-        do_sample=True,           # natural phrasing
+        max_new_tokens=32,   # concise
+        do_sample=True,
         top_p=0.9,
         temperature=0.7,
         pad_token_id=tokenizer.pad_token_id,
@@ -160,8 +156,8 @@ def make_reply(tokenizer: Any, model: Any, user_message: str, extracted: str, pr
     if not reply:
         reply = f"That sounds {predicted_label.lower()}."
 
-    # enforce one clean sentence without quotes or prefixes
-    for prefix in ("Assistant:", "assistant:", "Message:", "message:", "sentence:", "Sentence:"):
+    # clean prefixes/quotes and force one sentence
+    for prefix in ("Assistant:", "assistant:", "Message:", "message:", "Sentence:", "sentence:"):
         reply = reply.replace(prefix, "")
     reply = reply.strip(' "\'')
 
@@ -198,12 +194,12 @@ def main() -> None:
         logger.exception("LLM failed to load")
         return
 
-    print("\n---Emotion Classifier---\n")
-    print("-------------------------------------------\n")
-    print("[INSTRUCTIONS]\n")
-    print("- Type a sentence and press Enter to classify.\n")
-    print("- Type 'exit', 'quit', 'q' or 'x' to EXIT.\n")
-    print("- Type 'clear' or 'c' to CLEAR the screen.\n")
+    print("\n--- Emotion Classifier ---\n")
+    print("-------------------------------------------")
+    print("[INSTRUCTIONS]")
+    print("- Type a sentence and press Enter to classify.")
+    print("- Type 'exit', 'quit', 'q' or 'x' to EXIT.")
+    print("- Type 'clear' or 'c' to CLEAR the screen.")
     print("-------------------------------------------\n")
     print("Assistant: Hello! Say something and I'll classify the emotion.\n")
 
